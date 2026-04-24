@@ -1,7 +1,5 @@
 import tkinter as tk
-
 from PIL import Image, ImageTk
-
 from config import (
     COLORS,
     PREVIEW_W,
@@ -13,7 +11,6 @@ from config import (
     TEXT_REC_BADGE,
 )
 
-
 class CameraPreview:
     def __init__(self, parent, colors=None):
         self._colors = colors or COLORS
@@ -22,7 +19,7 @@ class CameraPreview:
 
         self.canvas = tk.Canvas(parent, bg=self._colors["PANEL"], highlightthickness=0)
         self.canvas.pack(fill="both", expand=True)
-        self.canvas.bind("<Configure>", self._on_resize)
+        self.canvas.bind("<Configure>", self.on_resize)
 
         self._bg_rect = self.canvas.create_rectangle(
             0, 0, PREVIEW_W, PREVIEW_H,
@@ -39,7 +36,7 @@ class CameraPreview:
             font=(FONT_FAMILY, 9, "bold"),
             anchor="nw", state="hidden",
         )
-        self._brackets = self._draw_brackets(PREVIEW_W, PREVIEW_H)
+        self._brackets = self.draw_brackets(PREVIEW_W, PREVIEW_H)
 
     def set_recording(self, active):
         state = "normal" if active else "hidden"
@@ -83,14 +80,14 @@ class CameraPreview:
         self.canvas.itemconfig(self._bg_rect, state="normal")
         self.canvas.itemconfig(self._no_signal, state="normal")
 
-    def _on_resize(self, event):
+    def on_resize(self, event):
         W, H = event.width, event.height
         self.canvas.coords(self._bg_rect, 0, 0, W, H)
         self.canvas.coords(self._no_signal, W // 2, H // 2)
         self.canvas.coords(self._rec_badge, 14, 14)
-        self._reposition_brackets(W, H)
+        self.reposition_brackets(W, H)
 
-    def _draw_brackets(self, W, H):
+    def draw_brackets(self, W, H):
         items = []
         for coords in self._bracket_coords(W, H):
             item = self.canvas.create_line(
@@ -99,7 +96,7 @@ class CameraPreview:
             items.append(item)
         return items
 
-    def _reposition_brackets(self, W, H):
+    def reposition_brackets(self, W, H):
         for item, coords in zip(self._brackets, self._bracket_coords(W, H)):
             self.canvas.coords(item, *coords)
 

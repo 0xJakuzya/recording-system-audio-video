@@ -2,7 +2,6 @@ import os
 import sys
 from datetime import datetime
 
-
 SAMPLE_RATE = 44100
 CHANNELS = 1
 AUDIO_DTYPE = "int16"
