@@ -46,12 +46,21 @@ jobs:
           $version = "${{ github.ref_name }}".TrimStart('v')
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion=$version installer.iss
 
+      - name: List build artifacts
+        shell: pwsh
+        run: |
+          Write-Host "=== dist/ ==="
+          if (Test-Path dist) { Get-ChildItem dist -Recurse | Select-Object FullName, Length }
+          Write-Host "=== installer_out/ ==="
+          if (Test-Path installer_out) { Get-ChildItem installer_out -Recurse | Select-Object FullName, Length }
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/recorder-*.exe
+            dist/recorder-${{ github.ref_name }}.exe
             installer_out/recorder-setup-*.exe
+          fail_on_unmatched_files: true
           generate_release_notes: true
           draft: false
           prerelease: false
