@@ -19,7 +19,11 @@ ENV/
 # PyInstaller output
 exe/
 *.spec
+!build.spec
 *.exe
+
+# Inno Setup output
+installer_out/
 
 # Recorded data (generated at runtime)
 data/
