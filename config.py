@@ -57,10 +57,13 @@ TEXT_NO_SIGNAL = "NO SIGNAL"
 TEXT_REC_BADGE = "● REC"
 
 USER_INFO_TITLE = "Данные участника"
+USER_INFO_SUBJECT_LABEL = "ID участника (число)"
+USER_INFO_SUBJECT_PLACEHOLDER = "1"
 USER_INFO_DOB_LABEL = "Дата рождения (ДД.ММ.ГГГГ)"
 USER_INFO_GENDER_LABEL = "Пол"
 USER_INFO_SUBMIT = "Продолжить"
-USER_INFO_ERROR = "Неверная дата. Формат: ДД.ММ.ГГГГ"
+USER_INFO_ERROR_DOB = "Неверная дата. Формат: ДД.ММ.ГГГГ"
+USER_INFO_ERROR_SUBJECT = "ID должен быть положительным числом"
 USER_INFO_DOB_PLACEHOLDER = "01.01.2000"
 USER_INFO_DOB_FORMAT = "%d.%m.%Y"
 USER_INFO_GENDERS = ("Мужской", "Женский")
@@ -74,13 +77,10 @@ else:
 OUTPUT_DIR = os.path.join(_BASE_DIR, "data")
 
 
-def next_session_dir():
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
+def next_session_dir(subject_id):
+    subject_dir = os.path.join(OUTPUT_DIR, str(subject_id))
+    os.makedirs(subject_dir, exist_ok=True)
     date_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-    n = 1
-    while True:
-        path = os.path.join(OUTPUT_DIR, f"session_{n}_{date_str}")
-        if not os.path.exists(path):
-            os.makedirs(path)
-            return path, date_str
-        n += 1
+    path = os.path.join(subject_dir, date_str)
+    os.makedirs(path, exist_ok=True)
+    return path, date_str

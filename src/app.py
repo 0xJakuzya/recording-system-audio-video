@@ -89,7 +89,8 @@ class RecorderApp:
             self.start_recording()
 
     def start_recording(self):
-        self.session_dir, self.date_str = next_session_dir()
+        subject_id = self.user_info["subject_id"] if self.user_info else "unknown"
+        self.session_dir, self.date_str = next_session_dir(subject_id)
         self.markers.reset()
         self.log_rows = []
         self.start_time = time.time()

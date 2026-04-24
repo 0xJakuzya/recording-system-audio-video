@@ -6,10 +6,13 @@ from config import (
     FONT_FAMILY,
     FONT_SIZES,
     USER_INFO_TITLE,
+    USER_INFO_SUBJECT_LABEL,
+    USER_INFO_SUBJECT_PLACEHOLDER,
     USER_INFO_DOB_LABEL,
     USER_INFO_GENDER_LABEL,
     USER_INFO_SUBMIT,
-    USER_INFO_ERROR,
+    USER_INFO_ERROR_DOB,
+    USER_INFO_ERROR_SUBJECT,
     USER_INFO_DOB_PLACEHOLDER,
     USER_INFO_DOB_FORMAT,
     USER_INFO_GENDERS,
@@ -27,21 +30,33 @@ class UserInfoDialog:
         frame.pack()
         label_font = (FONT_FAMILY, FONT_SIZES["mono_sm"])
         entry_font = (FONT_FAMILY, FONT_SIZES["mono"])
-        tk.Label(frame, text=USER_INFO_DOB_LABEL,
+
+        tk.Label(frame, text=USER_INFO_SUBJECT_LABEL,
                  bg=COLORS["BG"], fg=COLORS["MUTED"], font=label_font
                  ).grid(row=0, column=0, sticky="w", pady=(0, 4))
+        self.subject_var = tk.StringVar(value=USER_INFO_SUBJECT_PLACEHOLDER)
+        tk.Entry(frame, textvariable=self.subject_var,
+                 bg=COLORS["PANEL"], fg=COLORS["TEXT"],
+                 insertbackground=COLORS["TEXT"], relief="flat",
+                 font=entry_font, width=20
+                 ).grid(row=1, column=0, sticky="ew", pady=(0, 16), ipady=6)
+
+        tk.Label(frame, text=USER_INFO_DOB_LABEL,
+                 bg=COLORS["BG"], fg=COLORS["MUTED"], font=label_font
+                 ).grid(row=2, column=0, sticky="w", pady=(0, 4))
         self.dob_var = tk.StringVar(value=USER_INFO_DOB_PLACEHOLDER)
         tk.Entry(frame, textvariable=self.dob_var,
                  bg=COLORS["PANEL"], fg=COLORS["TEXT"],
                  insertbackground=COLORS["TEXT"], relief="flat",
                  font=entry_font, width=20
-                 ).grid(row=1, column=0, sticky="ew", pady=(0, 16), ipady=6)
+                 ).grid(row=3, column=0, sticky="ew", pady=(0, 16), ipady=6)
+
         tk.Label(frame, text=USER_INFO_GENDER_LABEL,
                  bg=COLORS["BG"], fg=COLORS["MUTED"], font=label_font
-                 ).grid(row=2, column=0, sticky="w", pady=(0, 4))
+                 ).grid(row=4, column=0, sticky="w", pady=(0, 4))
         self.gender_var = tk.StringVar(value=USER_INFO_GENDERS[0])
         gender_row = tk.Frame(frame, bg=COLORS["BG"])
-        gender_row.grid(row=3, column=0, sticky="w", pady=(0, 16))
+        gender_row.grid(row=5, column=0, sticky="w", pady=(0, 16))
         for value in USER_INFO_GENDERS:
             tk.Radiobutton(
                 gender_row, text=value, value=value, variable=self.gender_var,
@@ -49,31 +64,44 @@ class UserInfoDialog:
                 selectcolor=COLORS["PANEL"], activebackground=COLORS["BG"],
                 activeforeground=COLORS["TEXT"], font=label_font,
             ).pack(side="left", padx=(0, 12))
+
         self.error_label = tk.Label(frame, text="", bg=COLORS["BG"],
                                     fg=COLORS["ACCENT"], font=label_font)
-        self.error_label.grid(row=4, column=0, sticky="w", pady=(0, 8))
+        self.error_label.grid(row=6, column=0, sticky="w", pady=(0, 8))
+
         tk.Button(frame, text=USER_INFO_SUBMIT,
                   bg=COLORS["ACCENT"], fg="white", activebackground="#c1121f",
                   activeforeground="white", font=entry_font, bd=0,
                   padx=24, pady=10, cursor="hand2", relief="flat",
                   command=self.submit
-                  ).grid(row=5, column=0, sticky="ew")
+                  ).grid(row=7, column=0, sticky="ew")
         root.bind("<Return>", lambda e: self.submit())
         root.protocol("WM_DELETE_WINDOW", self.cancel)
 
     def submit(self):
+        subject_text = self.subject_var.get().strip()
+        if not subject_text.isdigit() or int(subject_text) <= 0:
+            self.error_label.config(text=USER_INFO_ERROR_SUBJECT)
+            return
+
         dob_text = self.dob_var.get().strip()
         try:
             dob = datetime.strptime(dob_text, USER_INFO_DOB_FORMAT).date()
         except ValueError:
-            self.error_label.config(text=USER_INFO_ERROR)
+            self.error_label.config(text=USER_INFO_ERROR_DOB)
             return
-        self.result = {"dob": dob.isoformat(), "gender": self.gender_var.get()}
+
+        self.result = {
+            "subject_id": int(subject_text),
+            "dob": dob.isoformat(),
+            "gender": self.gender_var.get(),
+        }
         self.root.destroy()
 
     def cancel(self):
         self.result = None
         self.root.destroy()
+
 
 def ask_user_info():
     root = tk.Tk()
