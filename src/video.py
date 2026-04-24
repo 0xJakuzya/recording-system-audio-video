@@ -1,48 +1,34 @@
-import threading
-import time
 import os
 import queue
+import threading
+import time
 
-try:
-    import cv2
-    VIDEO_AVAILABLE = True
-except ImportError:
-    VIDEO_AVAILABLE = False
+import cv2
+
+from config import VIDEO_FPS, VIDEO_FOURCC, VIDEO_CAMERA_INDEX
 
 
 class VideoRecorder:
     def __init__(self):
-        self._writer = None
         self._thread = None
-        self._recording = False
         self._stop_event = threading.Event()
-        self.frame_queue: queue.Queue = queue.Queue(maxsize=2)
-        self.error: str | None = None
-
-    @property
-    def available(self):
-        return VIDEO_AVAILABLE
-
-    def start(self, session_dir: str, date_str: str) -> bool:
-        """Start recording. Returns True on success, False on failure."""
-        if not VIDEO_AVAILABLE:
-            self.error = "Библиотека opencv не установлена"
-            return False
+        self.frame_queue = queue.Queue(maxsize=2)
         self.error = None
-        cap = cv2.VideoCapture(0)
+
+    def start(self, session_dir, date_str):
+        self.error = None
+        cap = cv2.VideoCapture(VIDEO_CAMERA_INDEX)
         if not cap.isOpened():
             self.error = "Камера недоступна"
             return False
 
-        fps = 20
         path = os.path.join(session_dir, f"video_{date_str}.avi")
-        fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+        fourcc = cv2.VideoWriter_fourcc(*VIDEO_FOURCC)
         w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        writer = cv2.VideoWriter(path, fourcc, fps, (w, h))
+        writer = cv2.VideoWriter(path, fourcc, VIDEO_FPS, (w, h))
 
         self._stop_event.clear()
-        self._recording = True
 
         def run():
             try:
@@ -53,15 +39,14 @@ class VideoRecorder:
                         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                         if not self.frame_queue.full():
                             self.frame_queue.put(rgb)
-                    time.sleep(1 / fps)
+                    time.sleep(1 / VIDEO_FPS)
             finally:
                 cap.release()
-                writer.release()  # всегда сбрасываем буфер на диск
+                writer.release()
 
         self._thread = threading.Thread(target=run, daemon=True)
         self._thread.start()
         return True
 
     def stop(self):
-        self._recording = False
-        self._stop_event.set()  # сигнал треду завершиться чисто
+        self._stop_event.set()

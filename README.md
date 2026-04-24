@@ -16,12 +16,9 @@
 git clone https://github.com/<ваш-логин>/metka-vido-audio.git
 cd metka-vido-audio
 python -m venv .venv
-.venv\Scripts\activate      # Windows
-# source .venv/bin/activate # macOS / Linux
+.venv\Scripts\activate     
 pip install -r requirements.txt
 ```
-
-> На Linux может потребоваться: `sudo apt install python3-tk portaudio19-dev`
 
 ## Запуск
 
