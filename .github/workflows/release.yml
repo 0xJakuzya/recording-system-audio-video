@@ -46,14 +46,6 @@ jobs:
           $version = "${{ github.ref_name }}".TrimStart('v')
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion=$version installer.iss
 
-      - name: List build artifacts
-        shell: pwsh
-        run: |
-          Write-Host "=== dist/ ==="
-          if (Test-Path dist) { Get-ChildItem dist -Recurse | Select-Object FullName, Length }
-          Write-Host "=== installer_out/ ==="
-          if (Test-Path installer_out) { Get-ChildItem installer_out -Recurse | Select-Object FullName, Length }
-
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -62,5 +54,30 @@ jobs:
             installer_out/recorder-setup-*.exe
           fail_on_unmatched_files: true
           generate_release_notes: true
+          body: |
+            ## Recorder ${{ github.ref_name }}
+
+            Приложение для синхронной записи видео, аудио и временных меток.
+
+            ### Установка
+
+            - **`recorder-setup-*.exe`** — установщик: создаст ярлык на рабочем столе и в меню «Пуск»
+            - **`recorder-*.exe`** — переносимый exe: запускается без установки
+
+            ### Как пользоваться
+
+            1. Запустите приложение — заполните дату рождения и пол
+            2. Нажмите **«НАЧАТЬ ЗАПИСЬ»** — начнётся синхронная запись с камеры и микрофона
+            3. **Пробел** — поставить метку (первое нажатие открывает сегмент, второе закрывает)
+            4. **F11** — полноэкранный режим, **Esc** — выйти
+            5. По завершении записи файлы сохранятся в папку `data/` рядом с приложением:
+               - `audio_*.wav` — аудиодорожка
+               - `video_*.avi` — видеопоток
+               - `markers_*.json` — метки с таймкодами
+               - `user_info.json` — данные участника
+
+            ### Примечание
+
+            При первом запуске Windows SmartScreen / Defender может показать предупреждение «неизвестный издатель» — это ожидаемо для неподписанных сборок. Нажмите **«Подробнее» → «Выполнить в любом случае»**.
           draft: false
           prerelease: false

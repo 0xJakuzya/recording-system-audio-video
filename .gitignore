@@ -25,6 +25,9 @@ exe/
 # Inno Setup output
 installer_out/
 
+# Local-only tooling (icon generator, not shipped in repo)
+scripts/
+
 # Recorded data (generated at runtime)
 data/
 
