@@ -89,6 +89,16 @@ class RecorderApp:
             self.start_recording()
 
     def start_recording(self):
+        audio_ok = self.audio.start()
+        if not audio_ok:
+            self.set_device_status("mic", False)
+            self.set_device_status("cam", None)
+            messagebox.showerror(
+                "Микрофон недоступен",
+                f"{self.audio.error}\n\nЗапись не начата. Подключите или включите микрофон и нажмите «Начать запись» еще раз.",
+            )
+            return
+
         subject_id = self.user_info["subject_id"] if self.user_info else "unknown"
         self.session_dir, self.date_str = next_session_dir(subject_id)
         self.markers.reset()
@@ -113,16 +123,13 @@ class RecorderApp:
         self.w["mark_indicator"].config(bg=COLORS["DIM"])
         self.w["preview"].set_recording(True)
 
-        audio_ok = self.audio.start()
         video_ok = self.video.start(self.session_dir, self.date_str)
 
         warnings = []
-        if not audio_ok:
-            warnings.append(f"Аудио: {self.audio.error}")
         if not video_ok:
             warnings.append(f"Видео: {self.video.error}")
 
-        self.set_device_status("mic", audio_ok)
+        self.set_device_status("mic", True)
         self.set_device_status("cam", video_ok)
 
         if warnings:
