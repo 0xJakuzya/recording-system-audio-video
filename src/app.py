@@ -89,6 +89,16 @@ class RecorderApp:
             self.start_recording()
 
     def start_recording(self):
+        signal_ok = self.audio.check_signal()
+        if not signal_ok:
+            self.set_device_status("mic", False)
+            self.set_device_status("cam", None)
+            messagebox.showerror(
+                "Микрофон не готов",
+                f"{self.audio.error}\n\nЗапись не начата. Проверьте кнопку выключения микрофона на ноутбуке и нажмите «Начать запись» еще раз.",
+            )
+            return
+
         audio_ok = self.audio.start()
         if not audio_ok:
             self.set_device_status("mic", False)
