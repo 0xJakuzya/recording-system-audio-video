@@ -61,12 +61,14 @@ USER_INFO_SUBJECT_LABEL = "ID участника (число)"
 USER_INFO_SUBJECT_PLACEHOLDER = "1"
 USER_INFO_DOB_LABEL = "Дата рождения (ДД.ММ.ГГГГ)"
 USER_INFO_GENDER_LABEL = "Пол"
+USER_INFO_DISEASE_LABEL = "Есть заболевание"
 USER_INFO_SUBMIT = "Продолжить"
 USER_INFO_ERROR_DOB = "Неверная дата. Формат: ДД.ММ.ГГГГ"
 USER_INFO_ERROR_SUBJECT = "ID должен быть положительным числом"
 USER_INFO_DOB_PLACEHOLDER = "01.01.2000"
 USER_INFO_DOB_FORMAT = "%d.%m.%Y"
 USER_INFO_GENDERS = ("Мужской", "Женский")
+USER_INFO_DISEASE_OPTIONS = ("Нет", "Да")
 USER_INFO_FILENAME = "user_info.json"
 
 if getattr(sys, "frozen", False):

@@ -10,12 +10,14 @@ from config import (
     USER_INFO_SUBJECT_PLACEHOLDER,
     USER_INFO_DOB_LABEL,
     USER_INFO_GENDER_LABEL,
+    USER_INFO_DISEASE_LABEL,
     USER_INFO_SUBMIT,
     USER_INFO_ERROR_DOB,
     USER_INFO_ERROR_SUBJECT,
     USER_INFO_DOB_PLACEHOLDER,
     USER_INFO_DOB_FORMAT,
     USER_INFO_GENDERS,
+    USER_INFO_DISEASE_OPTIONS,
 )
 
 
@@ -65,16 +67,30 @@ class UserInfoDialog:
                 activeforeground=COLORS["TEXT"], font=label_font,
             ).pack(side="left", padx=(0, 12))
 
+        tk.Label(frame, text=USER_INFO_DISEASE_LABEL,
+                 bg=COLORS["BG"], fg=COLORS["MUTED"], font=label_font
+                 ).grid(row=6, column=0, sticky="w", pady=(0, 4))
+        self.disease_var = tk.StringVar(value=USER_INFO_DISEASE_OPTIONS[0])
+        disease_row = tk.Frame(frame, bg=COLORS["BG"])
+        disease_row.grid(row=7, column=0, sticky="w", pady=(0, 16))
+        for value in USER_INFO_DISEASE_OPTIONS:
+            tk.Radiobutton(
+                disease_row, text=value, value=value, variable=self.disease_var,
+                bg=COLORS["BG"], fg=COLORS["TEXT"],
+                selectcolor=COLORS["PANEL"], activebackground=COLORS["BG"],
+                activeforeground=COLORS["TEXT"], font=label_font,
+            ).pack(side="left", padx=(0, 12))
+
         self.error_label = tk.Label(frame, text="", bg=COLORS["BG"],
                                     fg=COLORS["ACCENT"], font=label_font)
-        self.error_label.grid(row=6, column=0, sticky="w", pady=(0, 8))
+        self.error_label.grid(row=8, column=0, sticky="w", pady=(0, 8))
 
         tk.Button(frame, text=USER_INFO_SUBMIT,
                   bg=COLORS["ACCENT"], fg="white", activebackground="#c1121f",
                   activeforeground="white", font=entry_font, bd=0,
                   padx=24, pady=10, cursor="hand2", relief="flat",
                   command=self.submit
-                  ).grid(row=7, column=0, sticky="ew")
+                  ).grid(row=9, column=0, sticky="ew")
         root.bind("<Return>", lambda e: self.submit())
         root.protocol("WM_DELETE_WINDOW", self.cancel)
 
@@ -95,6 +111,7 @@ class UserInfoDialog:
             "subject_id": int(subject_text),
             "dob": dob.isoformat(),
             "gender": self.gender_var.get(),
+            "has_disease": self.disease_var.get() == USER_INFO_DISEASE_OPTIONS[1],
         }
         self.root.destroy()
 
